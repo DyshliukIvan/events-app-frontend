@@ -63,6 +63,7 @@ fun EventListScreen(
             Text(if (showOnlyPrague) "Show all" else "Only Prague")
         }
 
+
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn(
