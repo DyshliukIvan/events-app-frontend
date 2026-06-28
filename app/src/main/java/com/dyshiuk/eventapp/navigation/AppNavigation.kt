@@ -1,5 +1,6 @@
 package com.dyshiuk.eventapp.navigation
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -22,18 +23,22 @@ fun AppNavigation(
     val navController = rememberNavController()
     val startDestination = if (isLoggedIn) "home" else "login"
 
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn) {
+            navController.navigate("home") {
+                popUpTo("login") { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
         composable("login") {
             LoginScreen(
-                onLoginClick = {
-                    onLoginClick()
-                    navController.navigate("home") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                }
+                onLoginClick = onLoginClick
             )
         }
 

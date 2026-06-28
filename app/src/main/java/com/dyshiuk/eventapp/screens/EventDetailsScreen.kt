@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -47,11 +47,13 @@ fun EventDetailsScreen(
             ) {
                 Text(text = event.title)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = "Location: ${event.location}")
+                Text(text = "Location: ${event.location ?: "Not specified"}")
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Date: ${event.date}")
+                Text(text = "Start: ${event.startDate}")
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "End: ${event.endDate}")
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = event.description)
+                Text(text = event.description ?: "No description")
             }
         }
     }

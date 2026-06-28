@@ -29,12 +29,14 @@ fun EventListScreen(
     var showOnlyPrague by remember { mutableStateOf(false) }
 
     val filteredEvents = events.filter { event ->
+        val location = event.location ?: ""
+
         val matchesSearch =
             event.title.contains(searchText, ignoreCase = true) ||
-                    event.location.contains(searchText, ignoreCase = true)
+                    location.contains(searchText, ignoreCase = true)
 
         val matchesFilter =
-            !showOnlyPrague || event.location == "Prague"
+            !showOnlyPrague || location == "Prague"
 
         matchesSearch && matchesFilter
     }
@@ -63,7 +65,6 @@ fun EventListScreen(
             Text(if (showOnlyPrague) "Show all" else "Only Prague")
         }
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn(
@@ -82,10 +83,15 @@ fun EventListScreen(
                     ) {
                         Text(text = event.title)
                         Spacer(modifier = Modifier.height(6.dp))
-                        Text(text = "Location: ${event.location}")
-                        Text(text = "Date: ${event.date}")
+
+                        Text(text = "Location: ${event.location ?: "Unknown"}")
+
+                        Text(text = "Start: ${event.startDate}")
+                        Text(text = "End: ${event.endDate}")
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = event.description)
+
+                        Text(text = event.description ?: "No description")
                     }
                 }
             }

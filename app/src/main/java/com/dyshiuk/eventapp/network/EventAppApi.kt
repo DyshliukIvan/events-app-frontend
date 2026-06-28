@@ -7,20 +7,27 @@ import retrofit2.http.POST
 
 interface EventAppApi {
 
-    @POST("auth/fake-login")
-    suspend fun fakeLogin(
-        @Body request: FakeLoginRequest
+    @POST("api/auth/register")
+    suspend fun register(
+        @Body request: RegisterRequest
     ): AuthResponse
 
-    @GET("auth/me")
-    suspend fun getCurrentUser(
+    @POST("api/auth/login")
+    suspend fun login(
+        @Body request: LoginRequest
+    ): AuthResponse
+
+    @POST("api/auth/refresh")
+    suspend fun refresh(
+        @Header("X-Refresh-Token") refreshToken: String
+    ): AuthResponse
+
+    @GET("api/events")
+    suspend fun getEvents(
         @Header("Authorization") authorization: String
-    ): CurrentUserResponse
+    ): EventPageResponse
 
-    @GET("events")
-    suspend fun getEvents(): List<EventDto>
-
-    @POST("auth/google")
+    @POST("api/auth/google")
     suspend fun googleLogin(
         @Body request: GoogleLoginRequest
     ): AuthResponse

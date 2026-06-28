@@ -7,28 +7,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
+import com.dyshiuk.eventapp.auth.GoogleSignInHelper
 import com.dyshiuk.eventapp.auth.TokenStorage
 import com.dyshiuk.eventapp.navigation.AppNavigation
 import com.dyshiuk.eventapp.network.EventDto
-import com.dyshiuk.eventapp.network.FakeLoginRequest
+import com.dyshiuk.eventapp.network.GoogleLoginRequest
 import com.dyshiuk.eventapp.network.RetrofitClient
-import com.dyshiuk.eventapp.screens.LoadingScreen
 import com.dyshiuk.eventapp.screens.ErrorScreen
+import com.dyshiuk.eventapp.screens.LoadingScreen
 import com.dyshiuk.eventapp.ui.theme.EventAppTheme
 import kotlinx.coroutines.launch
-import com.dyshiuk.eventapp.auth.GoogleSignInHelper
-import com.dyshiuk.eventapp.network.GoogleLoginRequest
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var tokenStorage: TokenStorage
+    private lateinit var googleSignInHelper: GoogleSignInHelper
 
     private var isLoggedIn by mutableStateOf(false)
     private var isLoading by mutableStateOf(false)
     private var errorMessage by mutableStateOf<String?>(null)
     private var events by mutableStateOf<List<EventDto>>(emptyList())
-
-    private lateinit var googleSignInHelper: GoogleSignInHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,8 +78,11 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             try {
-                RetrofitClient.api.getCurrentUser("Bearer $token")
-                events = RetrofitClient.api.getEvents()
+                val eventPage = RetrofitClient.api.getEvents(
+                    authorization = "Bearer $token"
+                )
+
+                events = eventPage.content
                 isLoggedIn = true
             } catch (e: Exception) {
                 tokenStorage.clearToken()
@@ -100,7 +101,9 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             try {
                 val googleIdToken = googleSignInHelper.signIn(
-                    webClientId = "830319667435-2d7s2ncq99ck0jvit6bqh5tk9dni24qi.apps.googleusercontent.com"                )
+                    webClientId = "830319667435-2d7s2ncq99ck0jvit6bqh5tk9dni24qi.apps.googleusercontent.com"
+                    //webClientId = "902645554955-e0ip49sgml38opt54vpk06ahh28oefjg.apps.googleusercontent.com"
+                )
 
                 val loginResponse = RetrofitClient.api.googleLogin(
                     GoogleLoginRequest(idToken = googleIdToken)
@@ -108,11 +111,11 @@ class MainActivity : ComponentActivity() {
 
                 tokenStorage.saveToken(loginResponse.accessToken)
 
-                RetrofitClient.api.getCurrentUser(
-                    "Bearer ${loginResponse.accessToken}"
+                val eventPage = RetrofitClient.api.getEvents(
+                    authorization = "Bearer ${loginResponse.accessToken}"
                 )
 
-                events = RetrofitClient.api.getEvents()
+                events = eventPage.content
                 isLoggedIn = true
 
             } catch (e: Exception) {
