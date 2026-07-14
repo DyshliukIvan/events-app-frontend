@@ -65,9 +65,9 @@ fun EventListScreen(
     val filteredEvents = remember(events, searchText, showOnlyPrague) {
         events.filter { event ->
             val location = event.location.orEmpty()
-            val matchesSearch = event.title.contains(searchText, ignoreCase = true) ||
+            val matchesSearch = event.title.orEmpty().contains(searchText, ignoreCase = true) ||
                 location.contains(searchText, ignoreCase = true) ||
-                event.type.contains(searchText, ignoreCase = true)
+                event.type.orEmpty().contains(searchText, ignoreCase = true)
             val matchesFilter = !showOnlyPrague ||
                 location.contains("Prague", ignoreCase = true)
             matchesSearch && matchesFilter
@@ -250,7 +250,7 @@ private fun EventListCard(event: EventDto, onClick: () -> Unit) {
                 }
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = event.title,
+                    text = event.title?.takeIf { it.isNotBlank() } ?: "Untitled event",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
@@ -279,7 +279,7 @@ private fun EventListCard(event: EventDto, onClick: () -> Unit) {
 }
 
 @Composable
-private fun EventDateTile(value: String) {
+private fun EventDateTile(value: String?) {
     val (month, day) = eventDateBadge(value)
     Surface(
         modifier = Modifier.width(58.dp),

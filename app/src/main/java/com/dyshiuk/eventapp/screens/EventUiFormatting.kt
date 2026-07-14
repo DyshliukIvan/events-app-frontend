@@ -6,12 +6,16 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Locale
 
-private val eventDateFormatter = DateTimeFormatter.ofPattern("EEE, MMM d · h:mm a", Locale.getDefault())
-private val eventEndTimeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault())
+private val eventDateFormatter =
+    DateTimeFormatter.ofPattern("EEE, MMM d · h:mm a", Locale.getDefault())
+private val eventEndTimeFormatter =
+    DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault())
 
-internal fun formatEventDateRange(start: String, end: String): String {
+internal fun formatEventDateRange(start: String?, end: String?): String {
+    if (start.isNullOrBlank()) return "Date to be announced"
+
     val startDate = parseEventDate(start)
-    val endDate = parseEventDate(end)
+    val endDate = end?.let(::parseEventDate)
 
     if (startDate == null) return start
     if (endDate == null) return startDate.format(eventDateFormatter)
@@ -23,8 +27,8 @@ internal fun formatEventDateRange(start: String, end: String): String {
     }
 }
 
-internal fun eventDateBadge(value: String): Pair<String, String> {
-    val date = parseEventDate(value) ?: return "EVENT" to "•"
+internal fun eventDateBadge(value: String?): Pair<String, String> {
+    val date = value?.let(::parseEventDate) ?: return "EVENT" to "•"
     val month = date.format(DateTimeFormatter.ofPattern("MMM", Locale.getDefault())).uppercase()
     return month to date.dayOfMonth.toString()
 }
@@ -41,8 +45,9 @@ private fun parseEventDate(value: String): LocalDateTime? {
     }
 }
 
-internal fun String.toDisplayLabel(): String =
-    lowercase(Locale.getDefault())
+internal fun String?.toDisplayLabel(): String =
+    orEmpty()
+        .lowercase(Locale.getDefault())
         .replace('_', ' ')
         .split(' ')
         .filter { it.isNotBlank() }

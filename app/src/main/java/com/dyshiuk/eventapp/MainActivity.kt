@@ -12,6 +12,7 @@ import com.dyshiuk.eventapp.auth.TokenStorage
 import com.dyshiuk.eventapp.navigation.AppNavigation
 import com.dyshiuk.eventapp.network.EventDto
 import com.dyshiuk.eventapp.network.GoogleLoginRequest
+import com.dyshiuk.eventapp.network.LoginRequest
 import com.dyshiuk.eventapp.network.RetrofitClient
 import com.dyshiuk.eventapp.screens.ErrorScreen
 import com.dyshiuk.eventapp.screens.LoadingScreen
@@ -49,7 +50,7 @@ class MainActivity : ComponentActivity() {
                                 if (tokenStorage.getToken() != null) {
                                     tryAutoLogin()
                                 } else {
-                                    performLogin()
+                                    performGoogleLogin()
                                 }
                             }
                         )
@@ -59,7 +60,10 @@ class MainActivity : ComponentActivity() {
                         AppNavigation(
                             isLoggedIn = isLoggedIn,
                             events = events,
-                            onLoginClick = { performLogin() },
+                            onGoogleLoginClick = { performGoogleLogin() },
+                            onEmailLoginClick = { email, password ->
+                                performEmailLogin(email, password)
+                            },
                             onLogoutClick = { logout() }
                         )
                     }
@@ -94,7 +98,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun performLogin() {
+    private fun performGoogleLogin() {
         isLoading = true
         errorMessage = null
 
@@ -119,6 +123,36 @@ class MainActivity : ComponentActivity() {
 
             } catch (e: Exception) {
                 errorMessage = "Google login failed: ${e.message}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    private fun performEmailLogin(email: String, password: String) {
+        isLoading = true
+        errorMessage = null
+
+        lifecycleScope.launch {
+            try {
+                val loginResponse = RetrofitClient.api.login(
+                    LoginRequest(
+                        email = email,
+                        password = password,
+                        deviceId = "android-client",
+                        deviceType = "android"
+                    )
+                )
+
+                tokenStorage.saveToken(loginResponse.accessToken)
+                val eventPage = RetrofitClient.api.getEvents(
+                    authorization = "Bearer ${loginResponse.accessToken}"
+                )
+
+                events = eventPage.content
+                isLoggedIn = true
+            } catch (e: Exception) {
+                errorMessage = "Sign in failed: ${e.message}"
             } finally {
                 isLoading = false
             }

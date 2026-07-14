@@ -1,42 +1,34 @@
 # EventApp Android
 
-An Android client for browsing events and signing in with Google. The backend is maintained in a separate project and must be accessible through its REST API.
+A polished Android client for discovering local events. The app supports email/password and Google sign-in, stores JWT credentials, and loads secured event data from a separate Spring Boot API.
 
-## Requirements
+| Sign in | Event discovery |
+| --- | --- |
+| ![EventApp sign-in](docs/screenshots/login.png) | ![Event list](docs/screenshots/events.png) |
 
-- Android Studio with Embedded JDK 21
-- Android SDK 36.1
-- An emulator with Google Play or a physical Android device
-- A running EventApp backend
+## Highlights
 
-## Running the app
+- Kotlin and Jetpack Compose UI with Material 3
+- Email/password and Google authentication
+- JWT-secured REST integration with Retrofit
+- Event list and detail screens with resilient date and nullable-data formatting
+- Clear loading, empty, and error states
+- Unit tests, Android lint, and CI verification
 
-1. Open the repository root in Android Studio.
-2. Select `Gradle JDK: Embedded JDK`.
-3. Run `Sync Project with Gradle Files`.
-4. Run the `app` configuration on an emulator or physical device.
+## Run locally
 
-By default, the app connects to `http://10.0.2.2:8080/`. From the Android Emulator, this address maps to the host computer's `localhost`.
+Requirements: Android Studio, JDK 17+, Android SDK, and the [EventApp backend](https://github.com/DyshliukIvan/events-app-backend) running on port `8080`.
 
-## Configuration
+```powershell
+$env:JAVA_HOME="E:\AndroidStudio\jbr"
+.\gradlew.bat test assembleDebug lintDebug
+```
 
-You can override these values in your user-level `~/.gradle/gradle.properties` file or the local `gradle.properties` file:
+The emulator uses `http://10.0.2.2:8080/`, which maps to the host machine. Optional values can be set in `gradle.properties`:
 
 ```properties
 EVENTAPP_API_BASE_URL=http://10.0.2.2:8080/
 GOOGLE_WEB_CLIENT_ID=your-web-client-id.apps.googleusercontent.com
 ```
 
-For a physical device, set the backend URL to an address accessible from the local network, such as `http://192.168.1.10:8080/`.
-
-Google Sign-In requires OAuth configuration for the `com.dyshiuk.eventapp` application ID and the SHA-1 fingerprint of the signing certificate.
-
-## Verification
-
-```powershell
-$env:JAVA_HOME="E:\AndroidStudio\jbr"
-$env:Path="$env:JAVA_HOME\bin;$env:Path"
-.\gradlew.bat test assembleDebug
-```
-
-The debug APK is generated in `app/build/outputs/apk/debug/`.
+Google sign-in additionally requires OAuth configuration for application ID `com.dyshiuk.eventapp` and the signing certificate SHA-1.

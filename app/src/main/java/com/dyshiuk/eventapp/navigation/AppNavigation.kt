@@ -17,7 +17,8 @@ import com.dyshiuk.eventapp.screens.LoginScreen
 fun AppNavigation(
     isLoggedIn: Boolean,
     events: List<EventDto>,
-    onLoginClick: () -> Unit,
+    onGoogleLoginClick: () -> Unit,
+    onEmailLoginClick: (String, String) -> Unit,
     onLogoutClick: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -38,7 +39,8 @@ fun AppNavigation(
     ) {
         composable("login") {
             LoginScreen(
-                onLoginClick = onLoginClick
+                onGoogleLoginClick = onGoogleLoginClick,
+                onEmailLoginClick = onEmailLoginClick
             )
         }
 

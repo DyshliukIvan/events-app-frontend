@@ -110,7 +110,7 @@ private fun EventDetailsContent(event: EventDto, contentPadding: PaddingValues) 
                 }
                 Spacer(Modifier.height(20.dp))
                 Text(
-                    text = event.title,
+                    text = event.title?.takeIf { it.isNotBlank() } ?: "Untitled event",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
