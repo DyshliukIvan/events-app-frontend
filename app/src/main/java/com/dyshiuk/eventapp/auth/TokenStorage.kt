@@ -1,13 +1,14 @@
 package com.dyshiuk.eventapp.auth
 
 import android.content.Context
+import androidx.core.content.edit
 
 class TokenStorage(context: Context) {
 
     private val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     fun saveToken(token: String) {
-        prefs.edit().putString("jwt_token", token).apply()
+        prefs.edit { putString("jwt_token", token) }
     }
 
     fun getToken(): String? {
@@ -15,6 +16,6 @@ class TokenStorage(context: Context) {
     }
 
     fun clearToken() {
-        prefs.edit().remove("jwt_token").apply()
+        prefs.edit { remove("jwt_token") }
     }
 }

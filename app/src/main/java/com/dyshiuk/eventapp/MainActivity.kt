@@ -101,8 +101,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             try {
                 val googleIdToken = googleSignInHelper.signIn(
-                    webClientId = "830319667435-2d7s2ncq99ck0jvit6bqh5tk9dni24qi.apps.googleusercontent.com"
-                    //webClientId = "902645554955-e0ip49sgml38opt54vpk06ahh28oefjg.apps.googleusercontent.com"
+                    webClientId = BuildConfig.GOOGLE_WEB_CLIENT_ID
                 )
 
                 val loginResponse = RetrofitClient.api.googleLogin(

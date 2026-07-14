@@ -1,29 +1,27 @@
-# Android
-*.iml
-.gradle
-/local.properties
-/.idea
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-
-# Kotlin
-*.class
-
 # Android Studio
 .idea/
-*.ipr
-*.iws
+*.iml
 
-# Gradle
+# Gradle and build outputs
 .gradle/
+.kotlin/
 build/
+**/build/
 
-# Logs
+# Local Android configuration
+local.properties
+
+# Native build outputs
+.externalNativeBuild/
+.cxx/
+
+# OS and tooling files
+.DS_Store
+Thumbs.db
 *.log
+captures/
 
-# Keystore
+# Signing material
 *.jks
 *.keystore
+keystore.properties

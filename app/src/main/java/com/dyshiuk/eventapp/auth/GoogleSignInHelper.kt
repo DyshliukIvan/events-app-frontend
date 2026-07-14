@@ -3,6 +3,7 @@ package com.dyshiuk.eventapp.auth
 import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -23,10 +24,14 @@ class GoogleSignInHelper(
             .addCredentialOption(googleIdOption)
             .build()
 
-        val result = credentialManager.getCredential(
-            context = context,
-            request = request
-        )
+        val result = try {
+            credentialManager.getCredential(
+                context = context,
+                request = request
+            )
+        } catch (exception: NoCredentialException) {
+            throw IllegalStateException("No Google account is available for sign-in", exception)
+        }
 
         val credential = result.credential
 
